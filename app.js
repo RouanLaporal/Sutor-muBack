@@ -1,46 +1,51 @@
-var createError = require('http-errors');
 var express = require('express');
+var app = express();
+
+var createError = require('http-errors');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-var mongoose = require('mongoose')
-var app = express();
+var mongoose = require('mongoose');
+var socket = require("socket.io");
 var http = require('http');
 var cors = require('cors');
-
-
-var NodeMediaServer = require('node-media-server');
-
-var config = {
-  rtmp:{
-    port: 1935,
-    chunk_size: 6000,
-    gop_cache: true,
-    ping: 30,
-    ping_timeout: 60
-  },
-
-  http:{
-    port: 8000, 
-    allow_origin: '*'
-  }
-};
-
-var nms = new NodeMediaServer(config)
-nms.run();
-
-require('./models/Users');
-
-mongoose.connect('mongodb+srv://Cod3Lif3:aZERTYUIOP_973@cluster0.whwmt.mongodb.net/myFirstDatabase?retryWrites=true&w=majority',
-{ useNewUrlParser: true,
-  useUnifiedTopology: true })
-
+var node_media_server = require('./media_server');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-var chatRouter = require('./routes/chat');
 const { db } = require('./models/Users');
 
+app.use(cors());
+app.use(logger('dev'));
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
+app.use(express.static(path.join(__dirname, 'public')));
 
+app.use('/', indexRouter);
+app.use('/users', usersRouter);
+
+// catch 404 and forward to error handler
+app.use(function(req, res, next) {
+  next(createError(404));
+});
+
+// error handler
+app.use(function(err, req, res, next) {
+  // set locals, only providing error in development
+  res.locals.message = err.message;
+  res.locals.error = req.app.get('env') === 'development' ? err : {};
+
+  // render the error page
+  res.status(err.status || 500);
+  res.render('error');
+});
+
+//Connection to the data base
+mongoose.connect('mongodb+srv://Cod3Lif3:aZERTYUIOP_973@cluster0.whwmt.mongodb.net/myFirstDatabase?retryWrites=true&w=majority',
+{ 
+  useNewUrlParser: true,
+  useUnifiedTopology: true 
+})
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -58,9 +63,9 @@ app.get('/stream', function(req,res){
   res.sendFile(__dirname + '/stream.html')
 });
 
-var server = http.createServer(app);
-var io = require('socket.io')(server);
-server.listen(3000, console.log("Listening to port 3000"));
+//socket emit and reception
+var server = app.listen(3000, console.log("Listening to port 3000"));
+var io = socket(server);
 var activeUsers = new Set();
 io.on('connection',function(socket){
   console.log("Made socket connection!");
@@ -85,32 +90,6 @@ io.on('connection',function(socket){
   });
 });
 
-
-app.use(cors());
-app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
-
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
-app.use('/chat', chatRouter);
-
-// catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  next(createError(404));
-});
-
-// error handler
-app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
-});
+node_media_server.run();
 
 module.exports = app;
