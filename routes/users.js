@@ -15,6 +15,7 @@ router.get('/', async(req,res,next) => {
     res.json(await mongoose.model('User').find({}));
 });
 
+
 router.post('/', async(req,res,next) => {
     res.json(await mongoose.model('User').create(req.body));
 });
