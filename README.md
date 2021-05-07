@@ -8,7 +8,7 @@ Principalement Développé en [JS](https://developer.mozilla.org/fr/docs/Web/Jav
 L'installation de [node.js](https://nodejs.org/en/) est impérative,
 L'installation d' [OBS](https://obsproject.com/fr) si vous souhaitez faire tourner le stream
 
-###Installation
+##Installation
 
 Afin de pouvoir lancer le projet vous devez installez toute les dépances nécessaire au projet avec la commande ``npm -install``
 
@@ -17,7 +17,7 @@ ainsi que de paramétré OBS avec le serveur rtmp://localhost:1935/live et une c
 Pour lancer le serveur vous devez utiliser ``nodemon server``
 
 
-####Note
+##Note
 
 Concernant le projet je l'ai trouvé super intéressant. Niveau difficultés le temps car on avait une semaine entière mais avec les cours et le partiel à préparé c'était short la mise en place des sessions était pas compliqués mais l'accumulation de la fatigue. Sinon si on me propose de le refaire je le fais volentiers d'ailleurs si vous avez des projets similaire.
 
