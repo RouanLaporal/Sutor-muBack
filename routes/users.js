@@ -3,7 +3,7 @@ var router = express.Router();
 const mongoose = require('mongoose');
 
 
-var userCtrl = require('../controllers/user');
+var userCtrl = require('C:/Users/rouan/OneDrive/Bureau/Cod3Lif3/Proj/Suto/controllers/user');
 
 router.post('/signup', userCtrl.signup);
 router.post('/login', userCtrl.login);
